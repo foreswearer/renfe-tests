@@ -1,141 +1,152 @@
-# Tests del temario
+# RENFE OPE 2026 · Entrenador adaptativo
 
-Aplicación web estática para estudiar el temario de la convocatoria **POE26-09/3395 - Operador/a de Entrada de Centros de Gestión de Incidencias y Operaciones**.
+Aplicación web estática para estudiar el temario de la convocatoria **POE26-09/3395 — Operador/a de Entrada de Centros de Gestión de Incidencias y Operaciones**.
 
-Incluye **1.178 preguntas** repartidas por los cinco bloques del temario, sesiones de 10 preguntas, selección adaptativa, repetición espaciada, seguimiento de errores y cobertura, y copia/restauración del progreso.
+## Versión 2.0
 
-## Uso
+Esta versión sustituye el antiguo banco basado en frases para completar por un banco orientado a comprobar comprensión real.
 
-No requiere instalación, backend ni proceso de compilación.
+El banco contiene **1.169 preguntas** y no incluye preguntas del tipo «Completa correctamente...».
 
-1. Descarga `index.html`.
-2. Ábrelo con un navegador moderno (Chrome, Edge, Firefox o Safari).
-3. Elige el modo y, si quieres, un bloque concreto.
-4. Pulsa **Empezar test de 10**.
+Las preguntas se organizan en tres tipos:
 
-Toda la aplicación —HTML, CSS, JavaScript y banco de preguntas— está contenida en `index.html`.
+- **Aplicación**: casos, situaciones y consecuencias de una regla o concepto.
+- **Comprensión**: discriminación entre conceptos, definiciones o interpretaciones próximas.
+- **Memoria exacta**: cifras, fechas, límites y otros datos que sí conviene memorizar literalmente.
 
-## Publicación en GitHub Pages
+Cuando se estudia **Todo el temario**, la aplicación alterna sesiones con estas composiciones:
 
-1. Crear un repositorio en GitHub.
-2. Subir `index.html` y `README.md`.
-3. Ir a **Settings**.
-4. Abrir **Pages**.
-5. En **Build and deployment**, elegir **Deploy from a branch**.
-6. Seleccionar la rama **main**.
-7. Seleccionar **/(root)**.
-8. Guardar.
-9. Esperar a que GitHub publique el sitio.
-10. Abrir la URL publicada.
+- 6 Aplicación + 3 Comprensión + 1 Memoria exacta.
+- 6 Aplicación + 2 Comprensión + 2 Memoria exacta.
 
-No hay rutas absolutas ni dependencias externas, por lo que funciona tanto en una página de usuario como en una subruta de proyecto, por ejemplo `https://usuario.github.io/nombre-repositorio/`.
+A largo plazo equivale aproximadamente a **60 % aplicación, 25 % comprensión y 15 % memoria exacta**.
+
+Además, se han incorporado preguntas especialmente diseñadas para conceptos importantes: tiempos de conducción, responsabilidades en seguridad, discriminación indirecta, corresponsabilidad, transversalidad, mejora continua, Cultura de Seguridad, Atención al Cliente frente a Experiencia de Cliente, NPS, material remolcado, frenado, detección de trenes y señalización, entre otros.
+
+## Tests de 10 preguntas y tiempo máximo
+
+Cada test contiene exactamente **10 preguntas** y dispone de un máximo global de:
+
+**5 minutos y 30 segundos**
+
+El cronómetro:
+
+- comienza al iniciar el test;
+- no se pausa al cambiar de pregunta;
+- sigue computando aunque la pestaña quede temporalmente en segundo plano;
+- finaliza automáticamente el test al llegar a 00:00.
+
+Para que el tiempo tenga sentido como simulación de examen, la aplicación **no revela si una respuesta es correcta o incorrecta durante el test**. La corrección, la respuesta correcta y la explicación se muestran al finalizar.
+
+Si se agota el tiempo, las preguntas no respondidas cuentan como no acertadas en la puntuación de la sesión, pero no se registran como un fallo de aprendizaje del concepto.
 
 ## Usuarios
 
-La aplicación incluye exactamente dos perfiles locales independientes:
+Hay exactamente dos perfiles locales e independientes:
 
 - **Pin**
 - **Pon**
 
-Cada perfil conserva por separado sus respuestas, estadísticas, repetición espaciada, configuración, progreso y copias exportadas. Cambiar de usuario no mezcla datos.
+Cada usuario mantiene por separado:
 
-Si existe progreso de una versión anterior de la aplicación, se conserva y se migra automáticamente al perfil **Pin** la primera vez que se abre esta versión. El dato antiguo no se borra.
-
-## Persistencia
-
-El progreso se guarda automáticamente después de cada respuesta en `localStorage`, bajo una única clave versionada:
-
-`renfe_tests_poe26_09_3395_progress`
-
-El banco de preguntas **no** se almacena en `localStorage`; forma parte del código de la aplicación.
-
-Ten en cuenta que `localStorage` pertenece al navegador, perfil y origen. Por tanto:
-
-- Chrome y Edge no comparten automáticamente el progreso.
-- Dos ordenadores no comparten automáticamente el progreso.
-- La navegación privada puede eliminarlo.
-- Borrar los datos del sitio puede eliminarlo.
-- Cambiar de URL/origen puede crear un almacenamiento independiente.
-
-### Exportar e importar
-
-**Exportar progreso** descarga un JSON con estadísticas, conceptos vistos, preguntas, repetición espaciada, historial reciente y configuración.
-
-**Importar progreso** valida antes de sustituir el estado actual:
-
-- JSON válido.
-- `schemaVersion`.
-- `temarioId`.
-- estructura mínima.
-
-Un JSON inválido no modifica el progreso existente.
-
-Este mecanismo permite estudiar en un ordenador, exportar, abrir la misma aplicación en otro y continuar allí.
+- preguntas respondidas;
+- aciertos y fallos;
+- nivel de dominio por concepto;
+- repetición espaciada;
+- historial reciente;
+- sesiones cronometradas;
+- progreso;
+- estimación de probabilidad de aprobar;
+- configuración y copias exportadas.
 
 ## Progreso y probabilidad de aprobar
 
-La pantalla muestra para cada usuario:
+La pantalla muestra:
 
-- **Cobertura**: porcentaje de conceptos del banco que se han trabajado al menos una vez.
-- **Progreso global**: indicador que combina cobertura y dominio acumulado.
+- **Cobertura**: conceptos trabajados al menos una vez.
 - **Precisión**: porcentaje histórico de respuestas correctas.
-- **Prob. aprobar**: estimación heurística disponible a partir de 30 respuestas.
+- **Progreso global**: combinación de cobertura y dominio acumulado.
+- **Revisiones pendientes**.
+- **Prob. aprobar**: estimación orientativa.
 
-La probabilidad de aprobar **no es una predicción oficial del resultado del examen**. Se calcula internamente a partir de precisión ajustada, cobertura, dominio y volumen de respuestas, y sirve como indicador comparativo de preparación. No incorpora posibles reglas oficiales de penalización salvo que se programen expresamente en una futura versión.
+La estimación comienza después de 30 respuestas. Cuando ya existen varias sesiones cronometradas, también incorpora el rendimiento obtenido en tests de 10 preguntas bajo el límite de 5:30.
 
-La tabla **Pin y Pon** permite comparar ambos perfiles sin mezclar sus historiales.
+No es una predicción oficial del resultado del examen.
 
-## Sistema de aprendizaje
+## Persistencia
 
-El modo **Adaptativo** prioriza:
+La aplicación utiliza únicamente `localStorage`.
 
-1. conceptos todavía no vistos;
-2. preguntas cuya revisión ya ha vencido;
-3. conceptos con errores;
-4. conceptos con menor nivel de dominio;
-5. preguntas no usadas recientemente.
+Claves principales de esta versión:
 
-Tras un acierto aumenta el nivel de dominio y se amplía el intervalo de revisión. Tras un error baja el dominio y la pregunta/concepto vuelve a quedar disponible para repaso próximo.
+- `renfe_tests_poe26_09_3395_progress_v2_pin`
+- `renfe_tests_poe26_09_3395_progress_v2_pon`
 
-Además existen:
+El banco de preguntas forma parte de `index.html` y no se guarda en `localStorage`.
 
-- **Solo conceptos nuevos** (se detiene si ya no quedan suficientes conceptos nuevos)
-- **Repaso de fallos y vencidas** (se limita a material pendiente de repaso)
-- **Aleatorio**
+### Importante: progreso de la versión anterior
 
-## Actualizaciones
+La versión 2 cambia de forma sustancial lo que mide cada pregunta. Por esa razón, **el progreso de la versión 1 no se migra automáticamente**.
 
-Constantes actuales:
+Esto evita que los aciertos obtenidos con preguntas de completar inflen artificialmente el dominio y la probabilidad de aprobar del nuevo banco.
 
-- `APP_VERSION = "1.1.0"`
-- `BANK_VERSION = "2026.09.22"`
-- `SCHEMA_VERSION = 1`
-- `TEMARIO_ID = "renfe-poe26-09-3395"`
+Los datos antiguos no se borran: simplemente se utilizan claves nuevas para esta versión.
 
-Los `conceptId` y `questionId` son estables. Para una actualización del banco:
+## Exportar e importar
 
-- conserva el ID de una pregunta corregida si sigue evaluando exactamente el mismo concepto;
-- asigna IDs nuevos a preguntas o conceptos nuevos;
-- no renumeres IDs existentes;
-- no cambies `TEMARIO_ID` si sigue siendo el mismo temario;
-- incrementa `BANK_VERSION` cuando cambie el banco;
-- incrementa `APP_VERSION` cuando cambie la aplicación;
-- cambia `SCHEMA_VERSION` solo si cambia la estructura del estado y se implementa una migración.
+**Exportar progreso** descarga un JSON independiente para Pin o Pon.
 
-Al sustituir `index.html` en GitHub, el `localStorage` del mismo origen se conserva. Los IDs ya conocidos mantienen su progreso y los nuevos empiezan sin historial.
+**Importar progreso** valida:
 
-## Reinicio
+- JSON válido;
+- `schemaVersion`;
+- `temarioId`;
+- estructura mínima.
 
-**Reiniciar progreso** requiere dos confirmaciones, incluida la escritura explícita de `REINICIAR`. Solo borra el estado de aprendizaje; no modifica el banco de preguntas.
+Un fichero incompatible no sustituye el progreso actual.
+
+## Publicación en GitHub Pages
+
+El paquete no necesita backend, npm, build ni librerías externas.
+
+Sube a la raíz del repositorio:
+
+- `index.html`
+- `README.md`
+- `CNAME`
+
+Después:
+
+1. GitHub → **Settings → Pages**.
+2. Source: **Deploy from a branch**.
+3. Branch: **main**.
+4. Folder: **/(root)**.
+5. En **Custom domain**, escribe `renfe-test.ramiro-rego.com`.
+6. Cuando GitHub termine la comprobación DNS y genere el certificado, activa **Enforce HTTPS**.
+
+## DNS en GoDaddy
+
+El registro para el subdominio debe ser:
+
+| Tipo | Nombre | Datos |
+|---|---|---|
+| CNAME | `renfe-test` | `foreswearer.github.io.` |
+
+No añadas `/renfe-test` al destino del CNAME.
+
+El archivo `CNAME` incluido en este paquete contiene exactamente:
+
+`renfe-test.ramiro-rego.com`
 
 ## Privacidad
 
-La aplicación no incluye Google Analytics, trackers, cookies publicitarias, telemetría ni peticiones a servicios externos.
+No hay backend, telemetría, Google Analytics, cookies publicitarias ni peticiones a servicios externos.
 
-**Todo el progreso permanece exclusivamente en el navegador mediante `localStorage`; GitHub no recibe esos datos.**
+El progreso permanece en el navegador del usuario.
 
-## Funcionamiento offline
+## Versiones
 
-La copia descargada de `index.html` puede abrirse directamente mediante `file://`.
-
-La versión de GitHub Pages necesita conexión para cargar inicialmente el archivo publicado. No se utiliza Service Worker ni PWA para evitar problemas de caché al actualizar el banco.
+- `APP_VERSION = 2.0.0`
+- `BANK_VERSION = 2026.09.22-comprension`
+- `SCHEMA_VERSION = 2`
+- `TEMARIO_ID = renfe-poe26-09-3395`
